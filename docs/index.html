@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keystone — Your AI Data Analyst</title>
+  <meta name="description" content="Keystone is an AI data analyst that understands how your data connects. Ask questions in plain English, get verified answers with charts — across all your data sources." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #080b12;
+      --bg2:      #0d1220;
+      --bg3:      #111827;
+      --border:   rgba(255,255,255,0.07);
+      --border2:  rgba(255,255,255,0.12);
+      --text:     #e2e8f0;
+      --muted:    #64748b;
+      --accent:   #6366f1;
+      --accent2:  #8b5cf6;
+      --cyan:     #22d3ee;
+      --green:    #10b981;
+      --yellow:   #f59e0b;
+      --red:      #ef4444;
+      --glow:     rgba(99,102,241,0.35);
+      --glow2:    rgba(34,211,238,0.2);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(8,11,18,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-logo .logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--cyan));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+
+    .nav-tagline {
+      display: block;
+      font-size: 0.6rem;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      margin-top: 1px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border2); background: rgba(255,255,255,0.05); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      box-shadow: 0 0 20px var(--glow);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 30px var(--glow); }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+      top: -100px; left: 50%;
+      transform: translateX(-50%);
+    }
+    .hero-orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(34,211,238,0.12) 0%, transparent 70%);
+      bottom: 0; right: 10%;
+    }
+    .hero-orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+      top: 20%; left: 5%;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 100px;
+      background: rgba(99,102,241,0.1);
+      border: 1px solid rgba(99,102,241,0.3);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #a5b4fc;
+      margin-bottom: 32px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #e2e8f0 0%, var(--accent) 40%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 48px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 80px;
+    }
+
+    .hero-actions .btn { padding: 14px 28px; font-size: 1rem; }
+
+    .hero-differentiator {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-style: italic;
+      max-width: 600px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .hero-differentiator em {
+      color: #a5b4fc;
+      font-style: italic;
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .compare-section {
+      padding: 120px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+      margin-top: 64px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .compare-col {
+      background: var(--bg2);
+      padding: 40px 36px;
+    }
+
+    .compare-col.after {
+      background: var(--bg3);
+    }
+
+    .compare-col h3 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 28px;
+      letter-spacing: -0.01em;
+    }
+
+    .compare-col.before h3 { color: var(--muted); }
+    .compare-col.after h3 { color: var(--green); }
+
+    .compare-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .compare-item:last-child { margin-bottom: 0; }
+
+    .compare-icon {
+      flex-shrink: 0;
+      width: 24px; height: 24px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+
+    .compare-col.before .compare-icon {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: var(--red);
+    }
+
+    .compare-col.after .compare-icon {
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.2);
+      color: var(--green);
+    }
+
+    .compare-col.before .compare-item { color: var(--muted); }
+    .compare-col.after .compare-item { color: var(--text); }
+
+    .how-section {
+      padding: 120px 0;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .step-card {
+      background: var(--bg2);
+      padding: 40px 28px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .step-card:hover { background: var(--bg3); }
+
+    .step-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    .step-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .demo-section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .demo-window {
+      width: 100%;
+      max-width: 900px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      box-shadow:
+        0 0 0 1px rgba(99,102,241,0.1),
+        0 40px 120px rgba(0,0,0,0.8),
+        0 0 80px rgba(99,102,241,0.1);
+      margin: 0 auto;
+    }
+
+    .window-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 20px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot-red   { width: 12px; height: 12px; border-radius: 50%; background: #ef4444; }
+    .dot-yellow { width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; }
+    .dot-green  { width: 12px; height: 12px; border-radius: 50%; background: #10b981; }
+
+    .window-title {
+      flex: 1;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .demo-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+
+    .chat-msg { margin-bottom: 20px; }
+    .chat-msg:last-child { margin-bottom: 0; }
+
+    .chat-role {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .chat-role.user  { color: var(--cyan); }
+    .chat-role.agent { color: var(--accent2); }
+
+    .chat-text {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .chat-text.agent { border-color: rgba(99,102,241,0.2); background: rgba(99,102,241,0.05); }
+
+    .tool-call {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.2);
+      color: var(--cyan);
+      font-size: 0.75rem;
+      margin: 4px 4px 4px 0;
+    }
+
+    .sql-block {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 10px;
+      color: #a5b4fc;
+      text-align: left;
+    }
+
+    .kw-select { color: var(--accent2); }
+    .kw-from   { color: var(--cyan); }
+    .kw-where  { color: var(--green); }
+    .kw-join   { color: var(--yellow); }
+
+    .why-section {
+      padding: 120px 0;
+      background: linear-gradient(180deg, transparent, rgba(99,102,241,0.02) 50%, transparent);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 64px;
+    }
+
+    .why-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .why-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .why-card:hover {
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(99,102,241,0.05);
+    }
+    .why-card:hover::before { opacity: 1; }
+
+    .why-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+    }
+
+    .fi-purple { background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.2); }
+    .fi-cyan   { background: rgba(34,211,238,0.1);  border: 1px solid rgba(34,211,238,0.2); }
+    .fi-green  { background: rgba(16,185,129,0.1);  border: 1px solid rgba(16,185,129,0.2); }
+    .fi-yellow { background: rgba(245,158,11,0.1);  border: 1px solid rgba(245,158,11,0.2); }
+
+    .why-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .why-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .video-section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .trust-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .trust-item {
+      background: var(--bg2);
+      padding: 32px 28px;
+      text-align: center;
+    }
+
+    .trust-icon {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .trust-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .trust-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .stack-section {
+      padding: 80px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .stack-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+      justify-content: center;
+    }
+
+    .stack-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .stack-chip:hover {
+      border-color: var(--border2);
+      color: var(--text);
+    }
+
+    .cta-section {
+      padding: 160px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-orb {
+      position: absolute;
+      width: 800px; height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .cta-sub {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-bottom: 48px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-actions .btn {
+      padding: 16px 36px;
+      font-size: 1.05rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    .cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--cyan);
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.75rem;
+      animation: fadeUp 1s ease 1s both;
+    }
+
+    .scroll-arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(45deg);
+      animation: scrollBounce 2s ease infinite;
+    }
+
+    @keyframes scrollBounce {
+      0%,100% { transform: rotate(45deg) translateY(0); }
+      50%      { transform: rotate(45deg) translateY(6px); }
+    }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      .steps-grid  { grid-template-columns: repeat(2, 1fr); }
+      .compare-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .trust-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .steps-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">⬡</div>
+    <div>Keystone<span class="nav-tagline">AI Agent for Data</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#problem">Why Keystone</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a href="#contact" class="btn btn-primary">Get in Touch →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-badge fade-up">
+    <span class="dot"></span>
+    AI-Powered Data Analysis
+  </div>
+
+  <h1 class="fade-up delay-1">
+    Query Anything, Across<br/>
+    <span class="gradient-text">Any Data System</span>
+  </h1>
+
+  <p class="hero-sub fade-up delay-2">
+    Understands your schema. Finds the joins. Writes the queries.<br/>
+    No schema setup. No pipelines. No data movement.
+  </p>
+
+  <p class="hero-differentiator fade-up delay-3">
+    <em>Unlike BI tools or copilots, Keystone understands how your data connects — and reasons over it.</em>
+  </p>
+
+  <div class="hero-actions fade-up delay-4">
+    <a href="#demo" class="btn btn-primary">Watch the Demo</a>
+    <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll to explore</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- PROBLEM → SOLUTION -->
+<section class="compare-section" id="problem">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:16px;">
+      <span class="section-label">The Problem</span>
+      <h2 class="section-title">Data analysis shouldn't be this hard</h2>
+    </div>
+    <div class="compare-grid">
+      <div class="compare-col before">
+        <h3>Before Keystone</h3>
+        <div class="compare-item">
+          <div class="compare-icon">✕</div>
+          <span>Data scattered across databases and file systems</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✕</div>
+          <span>Writing SQL is slow, manual, and error-prone</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✕</div>
+          <span>Join relationships are undocumented and hard to discover</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✕</div>
+          <span>Analysts become bottlenecks for every question</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✕</div>
+          <span>Building dashboards takes days for a single insight</span>
+        </div>
+      </div>
+      <div class="compare-col after">
+        <h3>With Keystone</h3>
+        <div class="compare-item">
+          <div class="compare-icon">✓</div>
+          <span>Ask questions in plain English, across all sources</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✓</div>
+          <span>AI writes and runs optimized, verified SQL for you</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✓</div>
+          <span>Relationships discovered automatically from the data</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✓</div>
+          <span>Anyone in the org can get answers in seconds</span>
+        </div>
+        <div class="compare-item">
+          <div class="compare-icon">✓</div>
+          <span>Instant answers with interactive charts and tables</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div style="text-align:center;">
+      <span class="section-label">How It Works</span>
+      <h2 class="section-title">From data sources to answers<br/>in four steps</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-icon">🔌</div>
+        <div class="step-title">Connect Your Data</div>
+        <div class="step-desc">
+          Point Keystone at your CSV files, Parquet datasets, or database connections. No data movement or duplication.
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <div class="step-icon">🧠</div>
+        <div class="step-title">Automatic Understanding</div>
+        <div class="step-desc">
+          Keystone indexes your data, learns column structures, and discovers join relationships — no schema definitions needed.
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-icon">💬</div>
+        <div class="step-title">Ask in Plain English</div>
+        <div class="step-desc">
+          Ask any analytical question. The AI agent finds the right tables, generates verified SQL, and executes it.
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <div class="step-icon">📊</div>
+        <div class="step-title">Get Answers + Charts</div>
+        <div class="step-desc">
+          Results come back with data tables, interactive visualizations, and the full SQL for transparency.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO — ONE KILLER EXAMPLE -->
+<section class="demo-section" id="demo">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:64px;">
+      <span class="section-label">Live Example</span>
+      <h2 class="section-title">One question. Full answer.</h2>
+      <p class="section-sub" style="margin: 0 auto;">
+        See how Keystone turns a plain English question into a verified, multi-table SQL query with results — automatically.
+      </p>
+    </div>
+
+    <div class="demo-window">
+      <div class="window-bar">
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+        <span class="window-title">keystone — agent chat</span>
+      </div>
+      <div class="demo-body">
+        <div class="chat-msg">
+          <div class="chat-role user">You</div>
+          <div class="chat-text">
+            Which customer segments generate the most revenue over time?<span class="cursor"></span>
+          </div>
+        </div>
+        <div class="chat-msg">
+          <div class="chat-role agent">Keystone Agent</div>
+          <div class="chat-text agent">
+            <div style="margin-bottom:10px;">I'll find the relevant tables and their join paths to answer this.</div>
+            <span class="tool-call">🧠 retrieve_schema</span>
+            <span class="tool-call">🔗 get_join_relationships</span>
+            <span class="tool-call">⚡ run_sql</span>
+            <div class="sql-block">
+              <span class="kw-select">SELECT</span> c.segment,<br/>
+              &nbsp;&nbsp;DATE_TRUNC(<span style="color:#f97316;">'quarter'</span>, o.order_date) AS quarter,<br/>
+              &nbsp;&nbsp;<span class="kw-select">SUM</span>(o.amount) AS total_revenue<br/>
+              <span class="kw-from">FROM</span> customers c<br/>
+              <span class="kw-join">JOIN</span> orders o <span class="kw-where">ON</span> c.customer_id = o.customer_id<br/>
+              <span class="kw-where">GROUP BY</span> c.segment, quarter<br/>
+              <span class="kw-where">ORDER BY</span> quarter, total_revenue <span class="kw-where">DESC</span>
+            </div>
+            <div style="margin-top:14px; display:flex; gap:12px; flex-wrap:wrap;">
+              <span class="tool-call">📊 visualize → line chart</span>
+              <span style="color: var(--green); font-size:0.8rem; display:flex; align-items:center; gap:4px;">✓ 24 rows · join verified · chart generated</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:48px;">
+      <span class="section-label">Full Walkthrough</span>
+      <p class="section-sub" style="margin: 8px auto 32px;">See the complete agent workflow in action.</p>
+      <div id="video-container" style="width:100%; max-width:900px; margin:0 auto; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid var(--border2); box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.08); position:relative; cursor:pointer; background:#000;">
+        <img
+          src="https://img.youtube.com/vi/5d8V2oJEDYw/maxresdefault.jpg"
+          alt="Keystone Demo"
+          style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.75; transition:opacity 0.3s;"
+          onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.75'"
+        />
+        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
+          <div style="width:72px; height:72px; border-radius:50%; background:rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px rgba(99,102,241,0.5);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW KEYSTONE UNDERSTANDS YOUR DATA -->
+<section class="why-section" id="why">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:16px;">
+      <span class="section-label">How Keystone Understands Your Data</span>
+      <h2 class="section-title">Built for real-world, messy data</h2>
+      <p class="section-sub" style="margin:8px auto 0; font-size:0.9rem; font-style:italic; color:var(--muted);">
+        Powered by statistical profiling, semantic indexing, and graph-based reasoning.
+      </p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon fi-purple">🔗</div>
+        <div class="why-title">Maps Relationships Automatically</div>
+        <div class="why-desc">
+          Discovers how tables connect — even when schemas are undocumented, columns are named differently, or relationships span multiple systems.
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon fi-cyan">🔍</div>
+        <div class="why-title">Finds Columns by Meaning, Not Names</div>
+        <div class="why-desc">
+          Matches columns across tables by what they contain, not what they're called. "cust_id" and "customer_number" are recognized as the same thing.
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon fi-green">📈</div>
+        <div class="why-title">Surfaces Hidden Patterns</div>
+        <div class="why-desc">
+          Detects correlations and related datasets you didn't know existed. Finds which tables are unionable, joinable, or statistically connected.
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon fi-yellow">🌐</div>
+        <div class="why-title">Understands Data Across Systems</div>
+        <div class="why-desc">
+          Works across CSV files, Parquet datasets, and database connections. Reasons over all of them as a single, connected data space.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST SIGNALS -->
+<section class="trust-section">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-item">
+        <div class="trust-icon">🔒</div>
+        <div class="trust-title">Your Data Never Leaves</div>
+        <div class="trust-desc">Runs 100% on your infrastructure. Works with local LLMs. No cloud dependency, full privacy.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🔌</div>
+        <div class="trust-title">No Data Movement</div>
+        <div class="trust-desc">Reads data where it lives. No ETL, no duplication, no warehouse setup. Connect and start asking.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🔧</div>
+        <div class="trust-title">Works with Existing Infra</div>
+        <div class="trust-desc">Connects to your databases and files. No new stack to adopt.</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🎓</div>
+        <div class="trust-title">Research-Backed</div>
+        <div class="trust-desc">Built by researchers with deep expertise in data discovery.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK (minimal, at bottom) -->
+<section class="stack-section" id="stack">
+  <div class="container" style="text-align:center;">
+    <span class="section-label">Technical Foundation</span>
+    <div class="stack-grid">
+      <span class="stack-chip">Python</span>
+      <span class="stack-chip">DuckDB</span>
+      <span class="stack-chip">FastAPI</span>
+      <span class="stack-chip">LangGraph</span>
+      <span class="stack-chip">React</span>
+      <span class="stack-chip">TypeScript</span>
+      <span class="stack-chip">Vega-Lite</span>
+      <span class="stack-chip">Ollama</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="cta-orb"></div>
+  <div class="container" style="position:relative; z-index:1;">
+    <div class="hero-badge" style="margin-bottom:32px;">
+      <span class="dot"></span>
+      Open to collaboration &amp; investment
+    </div>
+    <h2 class="cta-title gradient-text">Ready to change how<br/>your team works with data?</h2>
+    <p class="cta-sub">
+      Stop writing SQL by hand. Stop waiting for analysts. Start asking questions and getting answers.
+    </p>
+    <div class="cta-actions">
+      <a href="mailto:keystone.ai.agent@gmail.com" class="btn btn-primary">Get in Touch →</a>
+      <a href="#demo" class="btn btn-ghost">Watch the Demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <p>
+      Built with care by data discovery researchers
+    </p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver(
+    entries => entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '0';
+        e.target.style.animation = 'fadeUp 0.7s ease forwards';
+        observer.unobserve(e.target);
+      }
+    }),
+    { threshold: 0.1 }
+  );
+
+  document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
+    el.style.opacity = '0';
+    observer.observe(el);
+  });
+
+  document.getElementById('video-container').addEventListener('click', function() {
+    this.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/5d8V2oJEDYw?autoplay=1" title="Keystone Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block;"></iframe>';
+  });
+</script>
+
+</body>
+</html>
