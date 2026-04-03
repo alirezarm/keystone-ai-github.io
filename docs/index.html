@@ -625,6 +625,28 @@
       line-height: 1.6;
     }
 
+    .video-tab {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .video-tab:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    .video-tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 0 16px var(--glow);
+    }
+
     .stack-section {
       padding: 80px 0;
       border-top: 1px solid var(--border);
@@ -993,10 +1015,17 @@
 
     <div style="text-align:center; margin-top:48px;">
       <span class="section-label">Full Walkthrough</span>
-      <p class="section-sub" style="margin: 8px auto 32px;">See the complete agent workflow in action.</p>
+      <p class="section-sub" style="margin: 8px auto 24px;">See the complete agent workflow in action.</p>
+
+      <div style="display:flex; gap:8px; justify-content:center; margin-bottom:24px;">
+        <button class="video-tab active" onclick="switchVideo('5d8V2oJEDYw', this)">📊 Data Analysis</button>
+        <button class="video-tab" onclick="switchVideo('qBbq7fA3BjI', this)">🗺️ Spatial &amp; Maps</button>
+      </div>
+
       <div id="video-container" style="width:100%; max-width:900px; margin:0 auto; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid var(--border2); box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.08); position:relative; cursor:pointer; background:#000;">
         <img
-          src="https://img.youtube.com/vi/6W0OrYBMVIg/maxresdefault.jpg"
+          id="video-thumb"
+          src="https://img.youtube.com/vi/5d8V2oJEDYw/maxresdefault.jpg"
           alt="Keystone Demo"
           style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.75; transition:opacity 0.3s;"
           onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.75'"
@@ -1048,6 +1077,13 @@
         <div class="why-title">Understands Data Across Systems</div>
         <div class="why-desc">
           Works across CSV files, Parquet datasets, and database connections. Reasons over all of them as a single, connected data space.
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon fi-cyan">🗺️</div>
+        <div class="why-title">Maps &amp; Spatial Analysis</div>
+        <div class="why-desc">
+          Ask questions about geographic data and get interactive maps. Visualizes district boundaries, points of interest, and spatial aggregations — directly from your database.
         </div>
       </div>
     </div>
@@ -1144,8 +1180,24 @@
     observer.observe(el);
   });
 
+  var currentVideoId = '5d8V2oJEDYw';
+
+  function switchVideo(videoId, btn) {
+    currentVideoId = videoId;
+    document.querySelectorAll('.video-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    var container = document.getElementById('video-container');
+    container.innerHTML =
+      '<img id="video-thumb" src="https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg" alt="Keystone Demo" style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.75; transition:opacity 0.3s;" onmouseover="this.style.opacity=\'0.9\'" onmouseout="this.style.opacity=\'0.75\'" />' +
+      '<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">' +
+        '<div style="width:72px; height:72px; border-radius:50%; background:rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px rgba(99,102,241,0.5);">' +
+          '<svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
+        '</div>' +
+      '</div>';
+  }
+
   document.getElementById('video-container').addEventListener('click', function() {
-    this.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/6W0OrYBMVIg?autoplay=1" title="Keystone Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block;"></iframe>';
+    this.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + currentVideoId + '?autoplay=1" title="Keystone Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block;"></iframe>';
   });
 </script>
 
