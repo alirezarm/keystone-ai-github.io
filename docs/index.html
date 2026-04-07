@@ -31,6 +31,18 @@
 
     html { scroll-behavior: smooth; }
 
+    #problem, #how, #demo, #why, #stack, #contact {
+      scroll-margin-top: 72px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
@@ -625,6 +637,73 @@
       line-height: 1.6;
     }
 
+    .vid-thumb-card {
+      flex: 1;
+      max-width: 200px;
+      cursor: pointer;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      transition: all 0.2s;
+      background: var(--bg2);
+      font-family: inherit;
+      color: inherit;
+      padding: 0;
+      text-align: left;
+    }
+
+    .vid-thumb-card:hover { border-color: var(--accent); }
+
+    .vid-thumb-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--glow);
+    }
+
+    .vid-thumb-img {
+      position: relative;
+      aspect-ratio: 16/9;
+      overflow: hidden;
+    }
+
+    .vid-thumb-img img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+
+    .vid-thumb-card:hover .vid-thumb-img img,
+    .vid-thumb-card.active .vid-thumb-img img { opacity: 1; }
+
+    .vid-thumb-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .vid-thumb-play > div {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.85);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .vid-thumb-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 8px 10px;
+      text-align: center;
+      transition: color 0.2s;
+    }
+
+    .vid-thumb-card:hover .vid-thumb-label,
+    .vid-thumb-card.active .vid-thumb-label { color: var(--text); }
+
     .video-tab {
       padding: 8px 20px;
       border-radius: 8px;
@@ -790,9 +869,124 @@
       50%      { transform: rotate(45deg) translateY(6px); }
     }
 
+    .video-player-container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      /* overflow stays visible so focus outlines on child buttons are not clipped */
+      border: 1px solid var(--border2);
+      box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.08);
+      position: relative;
+      background: #000;
+    }
+
+    /* Inner wrapper clips the image/iframe to the rounded corners without clipping focus rings */
+    .video-media-clip {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .video-preview-image {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+    }
+
+    .video-player-container:hover .video-preview-image { opacity: 1; }
+
+    .video-play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      font-family: inherit;
+    }
+
+    .video-play-overlay .play-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(99,102,241,0.9);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 30px rgba(99,102,241,0.5);
+      pointer-events: none;
+    }
+
+    .vid-thumb-strip {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 16px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .vid-thumb-card:focus-visible,
+    .video-play-overlay:focus-visible,
+    .nav-hamburger:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .nav-hamburger {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
+    .nav-hamburger:hover { color: var(--text); }
+
     @media (max-width: 900px) {
       nav { padding: 0 24px; }
-      .nav-links { display: none; }
+      .nav-links {
+        position: absolute;
+        top: 64px; left: 0; right: 0;
+        background: rgba(8,11,18,0.97);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+        flex-direction: column;
+        gap: 0;
+        padding: 8px 0;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s, visibility 0.15s;
+        z-index: 99;
+      }
+      .nav-links.open {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .nav-links li a {
+        display: block;
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+      .nav-hamburger { display: flex; }
+    }
+
+    @media (max-width: 900px) {
       .steps-grid  { grid-template-columns: repeat(2, 1fr); }
       .compare-grid { grid-template-columns: 1fr; }
       .why-grid { grid-template-columns: 1fr; }
@@ -814,13 +1008,14 @@
     <div class="logo-icon">⬡</div>
     <div>Keystone<span class="nav-tagline">AI Agent for Data</span></div>
   </a>
-  <ul class="nav-links">
+  <ul id="nav-links" class="nav-links" aria-hidden="true">
     <li><a href="#problem">Why Keystone</a></li>
     <li><a href="#how">How It Works</a></li>
     <li><a href="#demo">Demo</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-cta">
+    <button type="button" class="nav-hamburger" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">☰</button>
     <a href="#contact" class="btn btn-primary">Get in Touch →</a>
   </div>
 </nav>
@@ -1017,24 +1212,57 @@
       <span class="section-label">Full Walkthrough</span>
       <p class="section-sub" style="margin: 8px auto 24px;">See the complete agent workflow in action.</p>
 
-      <div style="display:flex; gap:8px; justify-content:center; margin-bottom:24px;">
-        <button class="video-tab active" onclick="switchVideo('6W0OrYBMVIg', this)">📊 Data Analysis</button>
-        <button class="video-tab" onclick="switchVideo('qBbq7fA3BjI', this)">🗺️ Spatial &amp; Maps</button>
-      </div>
-
-      <div id="video-container" style="width:100%; max-width:900px; margin:0 auto; aspect-ratio:16/9; border-radius:16px; overflow:hidden; border:1px solid var(--border2); box-shadow: 0 40px 120px rgba(0,0,0,0.6), 0 0 60px rgba(99,102,241,0.08); position:relative; cursor:pointer; background:#000;">
-        <img
-          id="video-thumb"
-          src="https://img.youtube.com/vi/6W0OrYBMVIg/maxresdefault.jpg"
-          alt="Keystone Demo"
-          style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.75; transition:opacity 0.3s;"
-          onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='0.75'"
-        />
-        <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">
-          <div style="width:72px; height:72px; border-radius:50%; background:rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px rgba(99,102,241,0.5);">
+      <!-- Main player -->
+      <div id="video-container" class="video-player-container">
+        <div class="video-media-clip">
+          <img
+            class="video-preview-image"
+            src="https://img.youtube.com/vi/6W0OrYBMVIg/hqdefault.jpg"
+            alt="Business Analytics demo preview"
+          />
+        </div>
+        <button
+          type="button"
+          id="video-play-btn"
+          class="video-play-overlay"
+          aria-label="Play Business Analytics demo"
+        >
+          <div class="play-circle">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
           </div>
-        </div>
+        </button>
+      </div>
+
+      <!-- Thumbnail strip -->
+      <div class="vid-thumb-strip" role="group" aria-label="Demo video selector">
+        <button type="button" class="vid-thumb-card active" aria-pressed="true" aria-label="Play Business Analytics demo" data-video-id="6W0OrYBMVIg" data-video-title="Business Analytics">
+          <div class="vid-thumb-img">
+            <img src="https://img.youtube.com/vi/6W0OrYBMVIg/mqdefault.jpg" alt="" />
+            <div class="vid-thumb-play"><div><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
+          </div>
+          <div class="vid-thumb-label">Business Analytics</div>
+        </button>
+        <button type="button" class="vid-thumb-card" aria-pressed="false" aria-label="Play Spatial &amp; Maps demo" data-video-id="qBbq7fA3BjI" data-video-title="Spatial &amp; Maps">
+          <div class="vid-thumb-img">
+            <img src="https://img.youtube.com/vi/qBbq7fA3BjI/mqdefault.jpg" alt="" />
+            <div class="vid-thumb-play"><div><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
+          </div>
+          <div class="vid-thumb-label">Spatial &amp; Maps</div>
+        </button>
+        <button type="button" class="vid-thumb-card" aria-pressed="false" aria-label="Play Federated Queries demo" data-video-id="LHDExoFNFPM" data-video-title="Federated Queries">
+          <div class="vid-thumb-img">
+            <img src="https://img.youtube.com/vi/LHDExoFNFPM/mqdefault.jpg" alt="" />
+            <div class="vid-thumb-play"><div><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
+          </div>
+          <div class="vid-thumb-label">Federated Queries</div>
+        </button>
+        <button type="button" class="vid-thumb-card" aria-pressed="false" aria-label="Play SAP Process Mining demo" data-video-id="8qAyV0gYPa0" data-video-title="SAP Process Mining">
+          <div class="vid-thumb-img">
+            <img src="https://img.youtube.com/vi/8qAyV0gYPa0/mqdefault.jpg" alt="" />
+            <div class="vid-thumb-play"><div><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div></div>
+          </div>
+          <div class="vid-thumb-label">SAP Process Mining</div>
+        </button>
       </div>
     </div>
   </div>
@@ -1164,41 +1392,136 @@
 </footer>
 
 <script>
-  const observer = new IntersectionObserver(
-    entries => entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.style.opacity = '0';
-        e.target.style.animation = 'fadeUp 0.7s ease forwards';
-        observer.unobserve(e.target);
-      }
-    }),
-    { threshold: 0.1 }
-  );
-
-  document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
-    el.style.opacity = '0';
-    observer.observe(el);
-  });
-
-  var currentVideoId = '6W0OrYBMVIg';
-
-  function switchVideo(videoId, btn) {
-    currentVideoId = videoId;
-    document.querySelectorAll('.video-tab').forEach(function(t) { t.classList.remove('active'); });
-    btn.classList.add('active');
-    var container = document.getElementById('video-container');
-    container.innerHTML =
-      '<img id="video-thumb" src="https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg" alt="Keystone Demo" style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.75; transition:opacity 0.3s;" onmouseover="this.style.opacity=\'0.9\'" onmouseout="this.style.opacity=\'0.75\'" />' +
-      '<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none;">' +
-        '<div style="width:72px; height:72px; border-radius:50%; background:rgba(99,102,241,0.9); display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px rgba(99,102,241,0.5);">' +
-          '<svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>' +
-        '</div>' +
-      '</div>';
+  // Scroll-triggered card animations — skipped entirely when user prefers reduced motion
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const observer = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '0';
+          e.target.style.animation = 'fadeUp 0.7s ease forwards';
+          observer.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
+      el.style.opacity = '0';
+      observer.observe(el);
+    });
+  } else {
+    // Make all observed elements immediately visible
+    document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
+      el.style.opacity = '1';
+    });
   }
 
-  document.getElementById('video-container').addEventListener('click', function() {
-    this.innerHTML = '<iframe width="100%" height="100%" src="https://www.youtube.com/embed/' + currentVideoId + '?autoplay=1" title="Keystone Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="display:block;"></iframe>';
+  // Video player
+  var videoContainer = document.getElementById('video-container');
+  var playBtn = document.getElementById('video-play-btn');
+
+  function selectVideo(btn) {
+    var videoId = btn.dataset.videoId;
+    var videoTitle = btn.dataset.videoTitle;
+
+    // Update thumbnail active state
+    document.querySelectorAll('.vid-thumb-card').forEach(function(c) {
+      c.classList.remove('active');
+      c.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+
+    var mediaClip = videoContainer.querySelector('.video-media-clip');
+    var iframe = mediaClip ? mediaClip.querySelector('iframe') : null;
+    if (iframe) {
+      // Video already playing — switch to new video immediately
+      iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+      iframe.title = 'Keystone demo: ' + videoTitle;
+    } else {
+      // Preview state — update thumbnail and play button label
+      var img = videoContainer.querySelector('.video-preview-image');
+      img.src = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+      img.alt = videoTitle + ' demo preview';
+      playBtn.setAttribute('aria-label', 'Play ' + videoTitle + ' demo');
+    }
+  }
+
+  // Wire up thumbnail buttons
+  document.querySelectorAll('.vid-thumb-card').forEach(function(btn) {
+    btn.addEventListener('click', function() { selectVideo(this); });
   });
+
+  // Play button — replace preview with iframe
+  playBtn.addEventListener('click', function() {
+    var activeBtn = document.querySelector('.vid-thumb-card[aria-pressed="true"]');
+    var videoId = activeBtn ? activeBtn.dataset.videoId : '6W0OrYBMVIg';
+    var videoTitle = activeBtn ? activeBtn.dataset.videoTitle : 'Business Analytics';
+
+    var iframe = document.createElement('iframe');
+    iframe.width = '100%';
+    iframe.height = '100%';
+    iframe.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+    iframe.title = 'Keystone demo: ' + videoTitle;
+    iframe.frameBorder = '0';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.allowFullscreen = true;
+    iframe.style.display = 'block';
+
+    // Replace contents of the clip wrapper with the iframe; leave the play button out of the DOM
+    var mediaClip = videoContainer.querySelector('.video-media-clip');
+    while (mediaClip.firstChild) { mediaClip.removeChild(mediaClip.firstChild); }
+    mediaClip.appendChild(iframe);
+    playBtn.remove();
+    // Focus is intentionally not moved to the iframe after play starts
+  });
+
+  // Mobile nav hamburger
+  var hamburger = document.querySelector('.nav-hamburger');
+  var navLinks = document.getElementById('nav-links');
+  var navEl = document.querySelector('nav');
+
+  function openNav() {
+    navLinks.classList.add('open');
+    navLinks.setAttribute('aria-hidden', 'false');
+    hamburger.setAttribute('aria-expanded', 'true');
+    hamburger.setAttribute('aria-label', 'Close navigation');
+  }
+
+  function closeNav() {
+    navLinks.classList.remove('open');
+    navLinks.setAttribute('aria-hidden', 'true');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-label', 'Open navigation');
+  }
+
+  hamburger.addEventListener('click', function() {
+    if (navLinks.classList.contains('open')) { closeNav(); } else { openNav(); }
+  });
+
+  navLinks.querySelectorAll('a').forEach(function(a) {
+    a.addEventListener('click', closeNav);
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && navLinks.classList.contains('open')) { closeNav(); hamburger.focus(); }
+  });
+
+  document.addEventListener('click', function(e) {
+    if (navLinks.classList.contains('open') && !navEl.contains(e.target)) { closeNav(); }
+  });
+
+  // On crossing to desktop: close the drawer if open, then clear aria-hidden.
+  // On crossing back to mobile: ensure closed state is correct.
+  function syncNavOnResize() {
+    if (window.innerWidth > 900) {
+      if (navLinks.classList.contains('open')) { closeNav(); }
+      navLinks.setAttribute('aria-hidden', 'false');
+    } else if (!navLinks.classList.contains('open')) {
+      navLinks.setAttribute('aria-hidden', 'true');
+    }
+  }
+  window.addEventListener('resize', syncNavOnResize);
+  syncNavOnResize();
 </script>
 
 </body>
