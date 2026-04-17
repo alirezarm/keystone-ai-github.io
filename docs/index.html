@@ -31,7 +31,7 @@
 
     html { scroll-behavior: smooth; }
 
-    #problem, #how, #demo, #why, #stack, #contact {
+    #problem, #how, #demo, #why, #observability, #stack, #contact {
       scroll-margin-top: 72px;
     }
 
@@ -996,6 +996,152 @@
     @media (max-width: 600px) {
       .steps-grid { grid-template-columns: 1fr; }
     }
+
+    .obs-section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .obs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 64px;
+    }
+
+    .obs-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .obs-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .obs-card:hover {
+      border-color: rgba(34,211,238,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(34,211,238,0.05);
+    }
+
+    .obs-card:hover::before { opacity: 1; }
+
+    .obs-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 16px;
+      background: rgba(34,211,238,0.08);
+      border: 1px solid rgba(34,211,238,0.18);
+    }
+
+    .obs-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .obs-desc {
+      font-size: 0.875rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .trace-demo {
+      margin-top: 64px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(34,211,238,0.06);
+    }
+
+    .trace-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg3);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trace-bar-title {
+      flex: 1;
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .trace-body {
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .trace-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .trace-row:last-child { border-bottom: none; }
+
+    .trace-step {
+      flex-shrink: 0;
+      width: 20px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      padding-top: 2px;
+    }
+
+    .trace-label {
+      flex: 1;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .trace-label .tl-name {
+      font-weight: 700;
+      color: var(--cyan);
+      margin-right: 8px;
+    }
+
+    .trace-label .tl-detail {
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    .trace-badge {
+      flex-shrink: 0;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .tb-ok  { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+    .tb-mem { background: rgba(99,102,241,0.1); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.2); }
+    .tb-sql { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+    .tb-err { background: rgba(239,68,68,0.1); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+    @media (max-width: 900px) {
+      .obs-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1012,6 +1158,7 @@
     <li><a href="#problem">Why Keystone</a></li>
     <li><a href="#how">How It Works</a></li>
     <li><a href="#demo">Demo</a></li>
+    <li><a href="#observability">Observability</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-cta">
@@ -1193,15 +1340,21 @@
             <div class="sql-block">
               <span class="kw-select">SELECT</span> c.segment,<br/>
               &nbsp;&nbsp;DATE_TRUNC(<span style="color:#f97316;">'quarter'</span>, o.order_date) AS quarter,<br/>
-              &nbsp;&nbsp;<span class="kw-select">SUM</span>(o.amount) AS total_revenue<br/>
+              &nbsp;&nbsp;<span class="kw-select">SUM</span>(p.payment_value) AS total_revenue<br/>
               <span class="kw-from">FROM</span> customers c<br/>
               <span class="kw-join">JOIN</span> orders o <span class="kw-where">ON</span> c.customer_id = o.customer_id<br/>
+              <span class="kw-join">JOIN</span> order_payments p <span class="kw-where">ON</span> o.order_id = p.order_id<br/>
               <span class="kw-where">GROUP BY</span> c.segment, quarter<br/>
               <span class="kw-where">ORDER BY</span> quarter, total_revenue <span class="kw-where">DESC</span>
             </div>
             <div style="margin-top:14px; display:flex; gap:12px; flex-wrap:wrap;">
               <span class="tool-call">📊 visualize → line chart</span>
               <span style="color: var(--green); font-size:0.8rem; display:flex; align-items:center; gap:4px;">✓ 24 rows · join verified · chart generated</span>
+            </div>
+            <div style="margin-top:14px; padding:10px 14px; border-radius:8px; background:rgba(34,211,238,0.05); border:1px solid rgba(34,211,238,0.15); font-size:0.75rem; color:var(--muted); display:flex; gap:16px; flex-wrap:wrap;">
+              <span style="color:var(--cyan);">🔍 trace recorded</span>
+              <span>routing · tool calls · sql · timing</span>
+              <span style="color:#a5b4fc;">✦ source memory applied: "revenue = customer payments"</span>
             </div>
           </div>
         </div>
@@ -1275,7 +1428,7 @@
       <span class="section-label">How Keystone Understands Your Data</span>
       <h2 class="section-title">Built for real-world, messy data</h2>
       <p class="section-sub" style="margin:8px auto 0; font-size:0.9rem; font-style:italic; color:var(--muted);">
-        Powered by statistical profiling, semantic indexing, and graph-based reasoning.
+        Powered by statistical profiling, semantic indexing, and graph-based reasoning — and shaped by the source-specific rules you teach it.
       </p>
     </div>
     <div class="why-grid">
@@ -1312,6 +1465,108 @@
         <div class="why-title">Maps &amp; Spatial Analysis</div>
         <div class="why-desc">
           Ask questions about geographic data and get interactive maps. Visualizes district boundaries, points of interest, and spatial aggregations — directly from your database.
+        </div>
+      </div>
+      <div class="why-card">
+        <div class="why-icon fi-yellow">✍️</div>
+        <div class="why-title">Correct Keystone Once</div>
+        <div class="why-desc">
+          Fix a business definition or query rule in chat — Keystone applies the correction immediately and can save it as source memory so future sessions use the same interpretation automatically.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBSERVABILITY -->
+<section class="obs-section" id="observability">
+  <div class="container">
+    <div style="text-align:center; margin-bottom:16px;">
+      <span class="section-label">Observability</span>
+      <h2 class="section-title">You Can't Trust What You Can't See</h2>
+      <p class="section-sub" style="margin:8px auto 0;">
+        Keystone records structured execution traces for each analyst turn and session — so teams can inspect routing, tool calls, memory usage, and failures instead of guessing from outputs alone.
+      </p>
+    </div>
+    <div class="obs-grid">
+      <div class="obs-card">
+        <div class="obs-icon">🗂️</div>
+        <div class="obs-title">Structured Session Traces</div>
+        <div class="obs-desc">
+          Every analyst turn produces a structured trace: which source was selected, which tools were called, what SQL was generated, and how long each step took.
+        </div>
+      </div>
+      <div class="obs-card">
+        <div class="obs-icon">🔀</div>
+        <div class="obs-title">Routing Transparency</div>
+        <div class="obs-desc">
+          See which data source was selected for each query and how the workflow proceeded — catching misroutes before they become wrong answers.
+        </div>
+      </div>
+      <div class="obs-card">
+        <div class="obs-icon">🐛</div>
+        <div class="obs-title">Debug Failures Without Reconstructing Logs</div>
+        <div class="obs-desc">
+          When a query fails or returns unexpected results, inspect the trace directly — tool inputs, SQL, memory hits, and errors are all captured in one place.
+        </div>
+      </div>
+      <div class="obs-card">
+        <div class="obs-icon">📐</div>
+        <div class="obs-title">Foundation for Evaluation &amp; Guardrails</div>
+        <div class="obs-desc">
+          Use visible, structured behavior as the basis for systematic evaluation and adding guardrails — not guesses from final outputs.
+        </div>
+      </div>
+    </div>
+
+    <!-- Trace demo panel -->
+    <div class="trace-demo">
+      <div class="trace-bar">
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+        <span class="trace-bar-title">keystone — execution trace · session_a3f9</span>
+      </div>
+      <div class="trace-body">
+        <div class="trace-row">
+          <div class="trace-step">01</div>
+          <div class="trace-label">
+            <span class="tl-name">router</span>
+            <span class="tl-detail">query → olist_lake · confidence 0.94</span>
+          </div>
+          <span class="trace-badge tb-ok">routed</span>
+        </div>
+        <div class="trace-row">
+          <div class="trace-step">02</div>
+          <div class="trace-label">
+            <span class="tl-name">source memory</span>
+            <span class="tl-detail">applied: "revenue = customer payments, not item price"</span>
+          </div>
+          <span class="trace-badge tb-mem">memory hit</span>
+        </div>
+        <div class="trace-row">
+          <div class="trace-step">03</div>
+          <div class="trace-label">
+            <span class="tl-name">get_table_schemas</span>
+            <span class="tl-detail">customers, orders, order_payments · 3 tables</span>
+          </div>
+          <span class="trace-badge tb-ok">ok · 41 ms</span>
+        </div>
+        <div class="trace-row">
+          <div class="trace-step">04</div>
+          <div class="trace-label">
+            <span class="tl-name">run_sql</span>
+            <span class="tl-detail">SELECT segment, quarter, SUM(payment_value) … JOIN order_payments</span>
+          </div>
+          <span class="trace-badge tb-sql">24 rows · 180 ms</span>
+        </div>
+        <div class="trace-row">
+          <div class="trace-step">05</div>
+          <div class="trace-label">
+            <span class="tl-name">visualize</span>
+            <span class="tl-detail">line chart · segment × quarter × revenue</span>
+          </div>
+          <span class="trace-badge tb-ok">chart ready</span>
         </div>
       </div>
     </div>
@@ -1404,13 +1659,13 @@
       }),
       { threshold: 0.1 }
     );
-    document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
+    document.querySelectorAll('.step-card, .why-card, .obs-card, .compare-col, .trust-item').forEach(el => {
       el.style.opacity = '0';
       observer.observe(el);
     });
   } else {
     // Make all observed elements immediately visible
-    document.querySelectorAll('.step-card, .why-card, .compare-col, .trust-item').forEach(el => {
+    document.querySelectorAll('.step-card, .why-card, .obs-card, .compare-col, .trust-item').forEach(el => {
       el.style.opacity = '1';
     });
   }
